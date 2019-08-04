@@ -4,7 +4,6 @@ import rospy
 from std_msgs.msg import Bool
 from dbw_mkz_msgs.msg import ThrottleCmd, SteeringCmd, BrakeCmd, SteeringReport
 from geometry_msgs.msg import TwistStamped
-import math
 
 from twist_controller import Controller
 
@@ -81,20 +80,18 @@ class DBWNode(object):
     def loop(self):
         rate = rospy.Rate(50)  # 50Hz
         while not rospy.is_shutdown():
+            self.throttle, self.brake, self.steering = self.controller.control(
+                self.current_vel,
+                self.dbw_enabled,
+                self.linear_vel,
+                self.angular_vel,
+            )
 
-            if None not in (self.current_vel, self.linear_vel, self.angular_vel):
-                self.throttle, self.brake, self.steering = self.controller.control(
-                    self.current_vel,
-                    self.dbw_enabled,
-                    self.linear_vel,
-                    self.angular_vel,
-                )
+            self.throttle, self.brake, self.steering = 1., 0., 0.
 
-                self.throttle, self.brake, self.steering = 1., 0., 0.
-
-                if self.dbw_enabled:
-                    self.publish(self.throttle, self.brake, self.steering)
-                rate.sleep()
+            if self.dbw_enabled:
+                self.publish(self.throttle, self.brake, self.steering)
+            rate.sleep()
 
     def dbw_enabled_cb(self, msg):
         rospy.loginfo('dbw_enabled : {}'.format(msg.data))
@@ -109,6 +106,7 @@ class DBWNode(object):
         self.curr_ang_vel = msg.twist.angular.z
 
     def publish(self, throttle, brake, steer):
+
         tcmd = ThrottleCmd()
         tcmd.enable = True
         tcmd.pedal_cmd_type = ThrottleCmd.CMD_PERCENT
