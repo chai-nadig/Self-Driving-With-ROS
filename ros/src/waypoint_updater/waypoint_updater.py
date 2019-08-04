@@ -80,6 +80,7 @@ class WaypointUpdater(object):
         lane.waypoints = self.base_waypoints.waypoints[closest_idx: closest_idx + LOOKAHEAD_WPS]
         self.final_waypoints_pub.publish(lane)
 
+    # Called around 50 Hz
     def pose_cb(self, msg):
         self.pose = msg
 
