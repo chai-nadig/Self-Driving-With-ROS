@@ -59,7 +59,15 @@ class TLDetector(object):
         self.last_wp = -1
         self.state_count = 0
 
-        rospy.spin()
+        self.loop()
+
+    def loop(self):
+        rate = rospy.Rate(30)
+        while not rospy.is_shutdown():
+            if self.pose and self.base_lane:
+                self.process_state_change()
+
+            rate.sleep()
 
     def pose_cb(self, msg):
         self.pose = msg
@@ -84,6 +92,9 @@ class TLDetector(object):
         """
         self.has_image = True
         self.camera_image = msg
+        self.process_state_change()
+
+    def process_state_change(self):
         light_wp, state = self.process_traffic_lights()
 
         '''
@@ -107,6 +118,7 @@ class TLDetector(object):
             rospy.loginfo('last_wp : {}'.format(self.last_wp))
 
         self.state_count += 1
+
 
     def get_closest_waypoint_idx(self, x, y):
         """Identifies the closest path waypoint to the given position
