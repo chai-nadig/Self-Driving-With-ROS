@@ -75,6 +75,8 @@ class DBWNode(object):
         rospy.Subscriber('/twist_cmd', TwistStamped, self.twist_cb)
         rospy.Subscriber('/current_velocity', TwistStamped, self.velocity_cb)
 
+        rospy.loginfo('added subscribers in dbw_node.py')
+
         self.loop()
 
     def loop(self):
@@ -88,6 +90,7 @@ class DBWNode(object):
             )
 
             self.throttle, self.brake, self.steering = 1., 0., 0.
+            rospy.loginfo('throttle: {}, brake: {}, steering: {}'.format(self.throttle, self.brake, self.steering))
 
             if self.dbw_enabled:
                 self.publish(self.throttle, self.brake, self.steering)
