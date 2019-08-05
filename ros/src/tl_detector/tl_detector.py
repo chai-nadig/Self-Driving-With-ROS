@@ -62,7 +62,7 @@ class TLDetector(object):
         self.loop()
 
     def loop(self):
-        rate = rospy.Rate(30)
+        rate = rospy.Rate(2)
         while not rospy.is_shutdown():
             if self.pose and self.base_lane:
                 self.process_state_change()
