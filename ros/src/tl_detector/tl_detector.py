@@ -11,7 +11,7 @@ from light_classification.tl_classifier import TLClassifier
 import tf
 import yaml
 
-STATE_COUNT_THRESHOLD = 1
+STATE_COUNT_THRESHOLD = 3
 
 
 class TLDetector(object):
