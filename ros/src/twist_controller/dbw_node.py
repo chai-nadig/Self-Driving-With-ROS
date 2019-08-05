@@ -89,7 +89,6 @@ class DBWNode(object):
                 self.angular_vel,
             )
 
-            self.throttle, self.brake, self.steering = 1., 0., 0.
             rospy.loginfo('throttle: {}, brake: {}, steering: {}'.format(self.throttle, self.brake, self.steering))
 
             if self.dbw_enabled:
