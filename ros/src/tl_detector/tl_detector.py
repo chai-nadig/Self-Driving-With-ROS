@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import numpy as np
 import rospy
 from scipy.spatial import KDTree
 from std_msgs.msg import Int32
@@ -10,7 +9,6 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 from light_classification.tl_classifier import TLClassifier
 import tf
-import cv2
 import yaml
 
 STATE_COUNT_THRESHOLD = 3
@@ -21,7 +19,7 @@ class TLDetector(object):
         rospy.init_node('tl_detector')
 
         self.pose = None
-        self.waypoints = None
+        self.base_lane = None
         self.camera_image = None
 
         self.waypoints_2d = None
@@ -65,7 +63,7 @@ class TLDetector(object):
         self.pose = msg
 
     def waypoints_cb(self, waypoints):
-        self.waypoints = waypoints
+        self.base_lane = waypoints
         if not self.waypoints_2d:
             self.waypoints_2d = [
                 [waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in waypoints.waypoints
@@ -113,7 +111,7 @@ class TLDetector(object):
             y (int): y coordinate of position to match a waypoint to
 
         Returns:
-            int: index of the closest waypoint in self.waypoints
+            int: index of the closest waypoint in self.base_lane
 
         """
         closest_idx = self.waypoints_tree.query([x, y], 1)[1]
@@ -159,7 +157,7 @@ class TLDetector(object):
             car_wp_idx = self.get_closest_waypoint_idx(self.pose.pose.position.x, self.pose.pose.position.y)
 
             # find the closest visible traffic light (if one exists)
-            diff = len(self.waypoints.waypoints)
+            diff = len(self.base_lane.waypoints)
             for i, light in enumerate(self.lights):
                 # Get stop light waypoint index
                 line = stop_line_positions[i]
