@@ -85,7 +85,6 @@ class WaypointUpdater(object):
         self.pose = msg
 
     def waypoints_cb(self, waypoints):
-        rospy.loginfo('waypoints_cb: number of waypoints: {}'.format(len(waypoints.waypoints)))
         self.base_lane = waypoints
         if not self.waypoints_2d:
             self.waypoints_2d = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in
@@ -102,9 +101,9 @@ class WaypointUpdater(object):
 
         if self.stopline_wp_idx == -1 or self.stopline_wp_idx >= farthest_idx:
             lane.waypoints = base_waypoints
-            rospy.loginfo('Not Decelerating - stopline_wp_idx {}, farthest_idx {}'.format(
-                self.stopline_wp_idx, farthest_idx))
         else:
+            rospy.loginf('Decelerating - stopline_wp_idx {}, farthest_idx {}'.format(
+                self.stopline_wp_idx, farthest_idx))
             lane.waypoints = self.decelerate_waypoints(base_waypoints, closest_idx)
 
         return lane
