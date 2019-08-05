@@ -23,7 +23,7 @@ class Controller(object):
         self.throttle_controller = PID(kp, ki, kd, mn, mx)
 
         tau = 0.5
-        ts = .02
+        ts = .01
         self.vel_lpf = LowPassFilter(tau, ts)
 
         self.vehicle_mass = vehicle_mass
@@ -59,7 +59,7 @@ class Controller(object):
             throttle = 0
             brake = 400
 
-        elif throttle < .1 and vel_error < 0:
+        elif throttle < 0.1 and vel_error < 0:
             throttle = 0
             decel = max(vel_error, self.decel_limit)
             brake = abs(decel) * self.vehicle_mass * self.wheel_radius
