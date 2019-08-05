@@ -26,7 +26,7 @@ class TLDetector(object):
         self.waypoints_tree = None
 
         self.prev_light_loc = None
-        self.has_image = None
+        self.has_image = False
 
         self.lights = []
 
@@ -54,6 +54,8 @@ class TLDetector(object):
 
         self.state = TrafficLight.UNKNOWN
         self.last_state = TrafficLight.UNKNOWN
+        self.state_change = TrafficLight.UNKNOWN
+
         self.last_wp = -1
         self.state_count = 0
 
@@ -65,9 +67,8 @@ class TLDetector(object):
     def waypoints_cb(self, waypoints):
         self.base_lane = waypoints
         if not self.waypoints_2d:
-            self.waypoints_2d = [
-                [waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in waypoints.waypoints
-            ]
+            self.waypoints_2d = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in
+                                 waypoints.waypoints]
             self.waypoints_tree = KDTree(self.waypoints_2d)
 
     def traffic_cb(self, msg):
@@ -153,7 +154,7 @@ class TLDetector(object):
 
         # List of positions that correspond to the line to stop in front of for a given intersection
         stop_line_positions = self.config['stop_line_positions']
-        if self.pose:
+        if self.pose and self.base_lane:
             car_wp_idx = self.get_closest_waypoint_idx(self.pose.pose.position.x, self.pose.pose.position.y)
 
             # find the closest visible traffic light (if one exists)
@@ -170,9 +171,9 @@ class TLDetector(object):
                     closest_light = light
                     line_wp_idx = temp_wp_idx
 
-        if closest_light:
-            state = self.get_light_state(closest_light)
-            return line_wp_idx, state
+            if closest_light:
+                state = self.get_light_state(closest_light)
+                return line_wp_idx, state
 
         return -1, TrafficLight.UNKNOWN
 
