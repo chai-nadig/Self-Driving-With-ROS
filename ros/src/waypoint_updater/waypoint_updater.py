@@ -9,8 +9,6 @@ from std_msgs.msg import Int32
 
 import math
 
-from waypoint_loader.waypoint_loader import MAX_DECEL
-
 '''
 This node will publish waypoints from the car's current position to some `x` distance ahead.
 
@@ -27,6 +25,7 @@ TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
 LOOKAHEAD_WPS = 200  # Number of waypoints we will publish. You can change this number
+MAX_DECEL = .5
 
 
 class WaypointUpdater(object):
@@ -94,6 +93,7 @@ class WaypointUpdater(object):
 
     def generate_lane(self):
         lane = Lane()
+        lane.header = self.base_lane.header
 
         closest_idx = self.get_closest_waypoint_idx()
         farthest_idx = closest_idx + LOOKAHEAD_WPS
