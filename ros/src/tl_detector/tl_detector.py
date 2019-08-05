@@ -11,7 +11,7 @@ from light_classification.tl_classifier import TLClassifier
 import tf
 import yaml
 
-STATE_COUNT_THRESHOLD = 3
+STATE_COUNT_THRESHOLD = 1
 
 
 class TLDetector(object):
@@ -102,6 +102,7 @@ class TLDetector(object):
             self.upcoming_red_light_pub.publish(Int32(light_wp))
         else:
             self.upcoming_red_light_pub.publish(Int32(self.last_wp))
+
         self.state_count += 1
 
     def get_closest_waypoint_idx(self, x, y):
